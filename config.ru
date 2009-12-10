@@ -10,8 +10,20 @@ module Rack
       @app.call(env)
     end
   end
+  
+  class NukeWWW
+    def initialize(app, options={})
+      @app = app
+    end
+    
+    def call(env)
+      return redirect(env['HTTP_HOST'].gsub('www\.', '')) if env['HTTP_HOST'] =~ /^www/
+      @app.call(env)
+    end
+  end
 end
 
+use Rack::NukeWWW
 use Rack::DefaultIndex
 use Rack::Static, :urls => [""], :root => "public"
 
